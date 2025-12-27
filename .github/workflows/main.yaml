@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Run Build
+        run: |
+          npm run build
+
+      - name: Test start script
+        run: | 
+          timeout 10s npm run start || if [ $? -eq 124 ]; then echo "Server started and ran for 10s"; exit 0; else echo "Server failed to start or crashed"; exit 1; fi
+
